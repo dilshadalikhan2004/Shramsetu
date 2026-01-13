@@ -1,15 +1,20 @@
 {
   "pages": {
-    "/auth/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/page.js"
+      "static/chunks/app/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
+    ],
+    "/auth/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/page.js"
     ],
     "/role-selection/page": [
       "static/chunks/webpack.js",
@@ -30,16 +35,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/setup/worker/page.js"
-    ],
-    "/general-profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/general-profile/page.js"
-    ],
-    "/(worker)/worker-profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(worker)/worker-profile/page.js"
     ],
     "/(employer)/dashboard/page": [
       "static/chunks/webpack.js",
