@@ -1,0 +1,12 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/auth/page": "app/auth/page.js",
+  "/setup/worker/page": "app/setup/worker/page.js",
+  "/role-selection/page": "app/role-selection/page.js",
+  "/general-profile/page": "app/general-profile/page.js",
+  "/setup/employer/page": "app/setup/employer/page.js",
+  "/(worker)/home/page": "app/(worker)/home/page.js",
+  "/(worker)/worker-profile/page": "app/(worker)/worker-profile/page.js",
+  "/(employer)/employer-profile/page": "app/(employer)/employer-profile/page.js",
+  "/(employer)/dashboard/page": "app/(employer)/dashboard/page.js"
+}
