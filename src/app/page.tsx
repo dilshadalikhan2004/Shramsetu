@@ -2,47 +2,17 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useUserStore } from "@/store/useUserStore";
 
-export default function Home() {
+// Root page now auto-redirects to the splash screen
+export default function RootPage() {
     const router = useRouter();
-    const { isAuthenticated, mode, isProfileReady } = useUserStore();
-
     useEffect(() => {
-        // console.log("Home Page Check:", { isAuthenticated, mode, profileReady: isProfileReady() });
-
-        if (!isAuthenticated) {
-            router.push("/auth");
-            return;
-        }
-
-        const ready = isProfileReady();
-
-        if (mode === "worker") {
-            if (ready) {
-                router.push("/home");
-            } else {
-                router.push("/setup/worker");
-            }
-        } else if (mode === "employer") {
-            if (ready) {
-                router.push("/dashboard");
-            } else {
-                router.push("/setup/employer");
-            }
-        } else {
-            // Should usually be caught by above, but fallback
-            router.push("/role-selection");
-        }
-    }, [isAuthenticated, mode, router, isProfileReady]);
+        router.replace("/splash");
+    }, [router]);
 
     return (
-        <main className="flex min-h-screen items-center justify-center p-24 bg-brand-deep">
-            {/* Loading spinner or splash screen */}
-            <div className="animate-pulse flex flex-col items-center">
-                <h1 className="text-4xl font-bold text-white">ShramSetu</h1>
-                <p className="text-white/80 mt-2">Loading...</p>
-            </div>
-        </main>
+        <div className="fixed inset-0 flex items-center justify-center" style={{ background: "#0a2540" }}>
+            <div className="w-8 h-8 rounded-full border-4 border-white/20 border-t-[#e85d26] animate-spin" />
+        </div>
     );
 }

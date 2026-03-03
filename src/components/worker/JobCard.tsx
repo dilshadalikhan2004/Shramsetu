@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "lucide-react"; // Wait, Badge is ui component usually. Using Lucide icon for now or simple div.
 import { MapPin, Clock, IndianRupee } from "lucide-react";
 
 interface JobProps {

@@ -1,40 +1,50 @@
 "use client";
 
-import { Navbar } from "@/components/layout/Navbar";
-import { BottomNav } from "@/components/layout/BottomNav";
-import { useEffect } from "react";
+import { WorkerAppLayout } from "./WorkerAppLayout";
+import { EmployerAppLayout } from "../(employer)/EmployerAppLayout";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 
-export default function WorkerLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-    const { isProfileReady, isAuthenticated } = useUserStore();
+export default function WorkerLayout({ children }: { children: React.ReactNode }) {
+    const { isProfileReady, isAuthenticated, mode, generalProfile } = useUserStore();
     const router = useRouter();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => { setMounted(true); }, []);
 
     useEffect(() => {
+        if (!mounted) return;
         if (!isAuthenticated) {
-            router.push("/auth");
+            router.push("/splash");
             return;
         }
-        if (!isProfileReady()) {
-            router.push("/setup/worker");
-        }
-    }, [isProfileReady, isAuthenticated, router]);
+        // Remove employer redirect to allow shared pages (settings, help, etc.) 
+        // to be accessed by employers while being in this route group.
 
-    if (!isProfileReady()) {
-        return null; // Or a loading spinner
+        if (isProfileReady && !isProfileReady()) {
+            router.push("/setup/worker");
+            return;
+        }
+
+        if (generalProfile?.kycStatus === 'none') {
+            router.push("/kyc");
+            return;
+        }
+    }, [mounted, isAuthenticated, mode, isProfileReady, generalProfile, router]);
+
+    if (!mounted) {
+        return (
+            <div className="min-h-screen flex items-center justify-center" style={{ background: "#f3f4f6" }}>
+                <div className="w-8 h-8 rounded-full border-4 border-gray-200 border-t-[#e85d26] animate-spin" />
+            </div>
+        );
     }
 
-    return (
-        <div className="flex flex-col min-h-screen bg-bg-surface">
-            <Navbar />
-            <main className="flex-1 pb-16">
-                {children}
-            </main>
-            <BottomNav />
-        </div>
-    );
+    // Dynamically choose layout based on mode
+    if (mode === "employer") {
+        return <EmployerAppLayout>{children}</EmployerAppLayout>;
+    }
+
+    return <WorkerAppLayout>{children}</WorkerAppLayout>;
 }

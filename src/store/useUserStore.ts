@@ -3,6 +3,31 @@ import { persist } from 'zustand/middleware';
 
 export type UserMode = 'worker' | 'employer';
 
+// Supported Indian Languages (22+ official + regional)
+export type SupportedLanguage =
+    | 'en'  // English
+    | 'hi'  // Hindi
+    | 'ta'  // Tamil
+    | 'te'  // Telugu
+    | 'kn'  // Kannada
+    | 'mr'  // Marathi
+    | 'gu'  // Gujarati
+    | 'bn'  // Bengali
+    | 'ml'  // Malayalam
+    | 'pa'  // Punjabi
+    | 'or'  // Odia
+    | 'as'  // Assamese
+    | 'ur'  // Urdu
+    | 'ks'  // Kashmiri
+    | 'kok' // Konkani
+    | 'mni' // Manipuri
+    | 'ne'  // Nepali
+    | 'brx' // Bodo
+    | 'doi' // Dogri
+    | 'mai' // Maithili
+    | 'sat' // Santali
+    | 'sd'; // Sindhi
+
 // Layer 1: General Profile (Mandatory)
 export interface GeneralProfile {
     id: string; // Phone number as ID for now
@@ -10,13 +35,15 @@ export interface GeneralProfile {
     phone: string;
     email?: string;
     city: string;
-    language: 'en' | 'hi';
+    language: SupportedLanguage;
     kycStatus: 'verified' | 'pending' | 'none';
     profileImage?: string;
 }
 
 // Layer 2: Worker Profile (Optional)
 export interface WorkerProfile {
+    title?: string;     // e.g., "Master Plumber"
+    bio?: string;       // About me text
     skills: string[]; // e.g., ["Plumber", "Painter"]
     experienceYears: number;
     dailyRate: number;
@@ -42,6 +69,9 @@ interface UserState {
     setMode: (mode: UserMode) => void;
     isAuthenticated: boolean;
     setAuthenticated: (status: boolean) => void;
+    languageSelected: boolean;
+    setLanguageSelected: (status: boolean) => void;
+    preferredLanguage: SupportedLanguage;
 
     // Profile Data
     generalProfile: GeneralProfile | null;
@@ -49,16 +79,18 @@ interface UserState {
     employerProfile: EmployerProfile | null;
 
     // Actions
-    login: (phone: string) => void;
+    login: (phone: string, token?: string, userData?: any) => void;
     logout: () => void;
 
     // Profile Management Actions
     updateGeneralProfile: (data: Partial<GeneralProfile>) => void;
     updateWorkerProfile: (data: Partial<WorkerProfile>) => void;
     updateEmployerProfile: (data: Partial<EmployerProfile>) => void;
+    setLanguage: (language: SupportedLanguage) => void;
 
-    // Helper to check if current mode profile is ready
+    // Helper ...
     isProfileReady: () => boolean;
+    isLanguageSelected: () => boolean;
 }
 
 export const useUserStore = create<UserState>()(
@@ -66,6 +98,8 @@ export const useUserStore = create<UserState>()(
         (set, get) => ({
             mode: 'worker',
             isAuthenticated: false,
+            languageSelected: false,
+            preferredLanguage: 'hi',
 
             generalProfile: null,
             workerProfile: null,
@@ -73,54 +107,67 @@ export const useUserStore = create<UserState>()(
 
             setMode: (mode) => set({ mode }),
             setAuthenticated: (status) => set({ isAuthenticated: status }),
+            setLanguageSelected: (status) => set({ languageSelected: status }),
 
-            login: (phone) => {
-                // Simulating a fresh login. 
-                // For MVP: We assume if phone is "9876543210", it's the full mock user.
-                // Otherwise, it's a new user with only General Profile.
+            login: (phone, token, userData) => {
+                if (token) {
+                    localStorage.setItem('token', token);
+                    if (typeof document !== 'undefined') {
+                        document.cookie = `auth_token=${token}; path=/; max-age=31536000; SameSite=Lax`;
+                    }
+                }
 
-                const isMockUser = phone === "9876543210";
+                if (userData) {
+                    set({
+                        isAuthenticated: true,
+                        generalProfile: userData.generalProfile || {
+                            id: userData.id,
+                            phone: userData.phone,
+                            name: userData.name || '',
+                            city: userData.city || '',
+                            language: userData.language || get().preferredLanguage,
+                            kycStatus: userData.kycStatus || 'none'
+                        },
+                        workerProfile: userData.workerProfile ? JSON.parse(JSON.stringify(userData.workerProfile)) : null,
+                        employerProfile: userData.employerProfile || null,
+                        languageSelected: !!userData.language || get().languageSelected,
+                        preferredLanguage: userData.language || get().preferredLanguage,
+                    });
+                    return;
+                }
+
+                // Minimal login
+                const currentLanguage = get().preferredLanguage;
+                const currentLangSelected = get().languageSelected;
 
                 set({
                     isAuthenticated: true,
+                    languageSelected: currentLangSelected,
                     generalProfile: {
                         id: phone,
-                        name: isMockUser ? "Ramesh Kumar" : "New User",
+                        name: "",
                         phone: phone,
-                        city: "Delhi",
-                        language: 'en',
-                        kycStatus: isMockUser ? 'verified' : 'none'
+                        city: "",
+                        language: currentLanguage,
+                        kycStatus: 'none'
                     },
-                    // If it's the mock user, give them a Worker Profile by default
-                    workerProfile: isMockUser ? {
-                        skills: ["Plumber", "Electrician"],
-                        experienceYears: 5,
-                        dailyRate: 800,
-                        serviceRadiusKm: 10,
-                        portfolioImages: [
-                            "https://images.unsplash.com/photo-1581578731117-104f2a41272c?q=80&w=300&auto=format&fit=crop",
-                            "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=300&auto=format&fit=crop",
-                            "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=300&auto=format&fit=crop"
-                        ],
-                        availability: true,
-                        rating: 4.5,
-                        ratingCount: 23
-                    } : null,
-                    employerProfile: isMockUser ? {
-                        companyName: "Ramesh Home Solutions",
-                        categories: ["Construction"],
-                        hiringHistoryCount: 5,
-                        rating: 4.8
-                    } : null
+                    workerProfile: null,
+                    employerProfile: null
                 });
             },
 
-            logout: () => set({
-                isAuthenticated: false,
-                generalProfile: null,
-                workerProfile: null,
-                employerProfile: null
-            }),
+            logout: () => {
+                localStorage.removeItem('token');
+                if (typeof document !== 'undefined') {
+                    document.cookie = `auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+                }
+                set({
+                    isAuthenticated: false,
+                    generalProfile: null,
+                    workerProfile: null,
+                    employerProfile: null
+                });
+            },
 
             updateGeneralProfile: (data) => set((state) => ({
                 generalProfile: state.generalProfile ? { ...state.generalProfile, ...data } : null
@@ -130,7 +177,6 @@ export const useUserStore = create<UserState>()(
                 workerProfile: state.workerProfile
                     ? { ...state.workerProfile, ...data }
                     : {
-                        // Defaults for new profile
                         skills: [],
                         experienceYears: 0,
                         dailyRate: 500,
@@ -147,12 +193,19 @@ export const useUserStore = create<UserState>()(
                 employerProfile: state.employerProfile
                     ? { ...state.employerProfile, ...data }
                     : {
-                        // Defaults
                         categories: [],
                         hiringHistoryCount: 0,
                         rating: 0,
                         ...data
                     } as EmployerProfile
+            })),
+
+            setLanguage: (language) => set((state) => ({
+                preferredLanguage: language,
+                generalProfile: state.generalProfile
+                    ? { ...state.generalProfile, language }
+                    : null,
+                languageSelected: true
             })),
 
             isProfileReady: () => {
@@ -164,10 +217,15 @@ export const useUserStore = create<UserState>()(
                 } else {
                     return !!state.employerProfile;
                 }
+            },
+
+            isLanguageSelected: () => {
+                const state = get();
+                return state.languageSelected;
             }
         }),
         {
-            name: 'shramsetu-storage-v2', // Changed version to force fresh state
+            name: 'shramsetu-storage-v2',
         }
     )
 );

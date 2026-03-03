@@ -1,52 +1,102 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/store/useUserStore";
-import { Briefcase, UserSearch } from "lucide-react"; // assuming icons
+import { Wrench, Building2, ChevronRight, ShieldCheck } from "lucide-react";
 
 export default function RoleSelectionPage() {
     const router = useRouter();
     const { setMode } = useUserStore();
+    const [selected, setSelected] = useState<"worker" | "employer" | null>(null);
 
-    const handleSelectRole = (role: 'worker' | 'employer') => {
-        setMode(role);
-        if (role === 'worker') {
-            router.push('/home'); // Worker Home
-        } else {
-            router.push('/dashboard'); // Employer Home
-        }
+    const handleContinue = () => {
+        if (!selected) return;
+        setMode(selected);
+        router.push("/auth");
+    };
+
+    const Card = ({
+        role, title, sub, icon,
+    }: { role: "worker" | "employer"; title: string; sub: string; icon: React.ReactNode }) => {
+        const active = selected === role;
+        return (
+            <button
+                onClick={() => setSelected(role)}
+                className="w-full rounded-2xl border p-5 flex items-center gap-4 text-left transition-all duration-200 active:scale-[0.98]"
+                style={{
+                    background: "#ffffff",
+                    borderColor: active ? "#e85d26" : "#e5e7eb",
+                    borderWidth: active ? 2 : 1,
+                    boxShadow: active ? "0 0 0 4px rgba(232,93,38,0.08)" : "0 1px 3px rgba(0,0,0,0.06)",
+                }}
+            >
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#fff1eb" }}>
+                    {icon}
+                </div>
+                <div className="flex-1">
+                    <div className="font-outfit font-semibold" style={{ fontSize: 18, color: "#111827" }}>{title}</div>
+                    <div className="font-dmsans mt-0.5" style={{ fontSize: 13, color: "#6b7280" }}>{sub}</div>
+                </div>
+                <ChevronRight className="w-5 h-5 shrink-0" style={{ color: active ? "#e85d26" : "#9ca3af" }} />
+            </button>
+        );
     };
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-bg-surface">
-            <div className="w-full max-w-sm space-y-6 text-center">
-                <h2 className="text-2xl font-bold text-gray-900">What are you looking for?</h2>
+        <div className="min-h-screen font-dmsans flex flex-col p-6" style={{ background: "#f3f4f6" }}>
+            <div className="flex-1 max-w-sm mx-auto w-full pt-12">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="font-outfit font-bold" style={{ fontSize: 28, color: "#111827" }}>Who are you?</h1>
+                    <p className="mt-1" style={{ fontSize: 14, color: "#6b7280" }}>Choose your account type to get started.</p>
+                </div>
 
-                <div className="grid gap-4">
-                    <button
-                        onClick={() => handleSelectRole('worker')}
-                        className="flex flex-col items-center p-6 bg-white border-2 border-transparent hover:border-worker-primary rounded-xl shadow-sm transition-all active:scale-95 group"
-                    >
-                        <div className="bg-blue-50 p-4 rounded-full mb-3 group-hover:bg-blue-100 transition-colors">
-                            <Briefcase className="w-8 h-8 text-worker-primary" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900">I want to find work</h3>
-                        <p className="text-sm text-gray-500">Apply for jobs, build teams, earn money</p>
-                    </button>
+                {/* Role Cards */}
+                <div className="space-y-3">
+                    <Card
+                        role="worker"
+                        title="I am a Worker"
+                        sub="Find verified daily wage jobs near you"
+                        icon={<Wrench className="w-6 h-6" style={{ color: "#e85d26" }} />}
+                    />
+                    <Card
+                        role="employer"
+                        title="I am an Employer"
+                        sub="Post jobs and hire verified labor"
+                        icon={<Building2 className="w-6 h-6" style={{ color: "#e85d26" }} />}
+                    />
+                </div>
 
-                    <button
-                        onClick={() => handleSelectRole('employer')}
-                        className="flex flex-col items-center p-6 bg-white border-2 border-transparent hover:border-employer-primary rounded-xl shadow-sm transition-all active:scale-95 group"
-                    >
-                        <div className="bg-green-50 p-4 rounded-full mb-3 group-hover:bg-green-100 transition-colors">
-                            <UserSearch className="w-8 h-8 text-employer-primary" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-gray-900">I want to hire</h3>
-                        <p className="text-sm text-gray-500">Post jobs, manage payments, hire teams</p>
-                    </button>
+                {/* Trust line */}
+                <div className="flex items-center justify-center gap-2 mt-6">
+                    <ShieldCheck className="w-4 h-4" style={{ color: "#0e9f6e" }} />
+                    <span className="font-dmsans font-semibold tracking-wider" style={{ fontSize: 11, color: "#9ca3af", textTransform: "uppercase" }}>
+                        100% SECURE &amp; VERIFIED
+                    </span>
                 </div>
             </div>
-        </main>
+
+            {/* Bottom Buttons */}
+            <div className="max-w-sm mx-auto w-full space-y-3 pb-4">
+                <button
+                    onClick={handleContinue}
+                    disabled={!selected}
+                    className="w-full h-12 rounded-xl font-dmsans font-semibold text-white transition-all duration-200 active:scale-95"
+                    style={{
+                        background: selected ? "#e85d26" : "#d1d5db",
+                        cursor: selected ? "pointer" : "not-allowed",
+                    }}
+                >
+                    Next Step
+                </button>
+                <p className="text-center font-dmsans" style={{ fontSize: 14, color: "#6b7280" }}>
+                    Already have an account?{" "}
+                    <button onClick={() => router.push("/auth")} className="font-semibold" style={{ color: "#e85d26" }}>
+                        Sign In
+                    </button>
+                </p>
+            </div>
+        </div>
     );
 }

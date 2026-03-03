@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google"; // Using Inter as reliable default
+import { Outfit, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TranslationProvider } from "@/lib/i18n/TranslationProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dmsans" });
 
 export const metadata: Metadata = {
     title: "ShramSetu",
@@ -18,17 +20,18 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={inter.className} suppressHydrationWarning>
+            <body className={`${dmSans.className} ${outfit.variable} ${dmSans.variable} font-dmsans bg-shram-bg`} suppressHydrationWarning>
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <div className="min-h-screen relative max-w-md mx-auto bg-white dark:bg-slate-950 shadow-xl overflow-hidden text-slate-900 dark:text-slate-50 transition-colors duration-300">
-                        {/* max-w-md mx-auto simulates mobile view on desktop */}
-                        {children}
-                    </div>
+                    <TranslationProvider>
+                        <div className="min-h-screen relative w-full dark:bg-slate-950 overflow-x-hidden text-slate-900 dark:text-slate-50 transition-colors duration-300">
+                            {children}
+                        </div>
+                    </TranslationProvider>
                 </ThemeProvider>
             </body>
         </html>

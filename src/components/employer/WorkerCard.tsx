@@ -19,12 +19,12 @@ export const WorkerCard = ({ name, role, rating, location, rate, onContact, onHi
         <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800 flex flex-col gap-3">
             <div className="flex justify-between items-start">
                 <div className="flex gap-3">
-                    <div className="w-12 h-12 bg-gray-200 dark:bg-slate-800 rounded-full flex items-center justify-center font-bold text-gray-500 dark:text-gray-400">
+                    <div className="w-12 h-12 bg-gray-200 dark:bg-slate-800 rounded-full flex items-center justify-center font-bold text-shram-neutral dark:text-gray-400">
                         {name.charAt(0)}
                     </div>
                     <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white">{name}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{role}</p>
+                        <p className="text-sm text-shram-neutral dark:text-gray-400">{role}</p>
                     </div>
                 </div>
                 <div className="flex items-center text-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 px-2 py-0.5 rounded text-xs font-bold">
@@ -32,7 +32,7 @@ export const WorkerCard = ({ name, role, rating, location, rate, onContact, onHi
                 </div>
             </div>
 
-            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 border-t border-b py-2 border-gray-50 dark:border-slate-800">
+            <div className="flex items-center justify-between text-sm text-shram-neutral dark:text-gray-400 border-t border-b py-2 border-gray-50 dark:border-slate-800">
                 <div className="flex items-center">
                     <MapPin className="w-3 h-3 mr-1" /> {location}
                 </div>

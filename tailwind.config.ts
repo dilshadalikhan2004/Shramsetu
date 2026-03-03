@@ -50,25 +50,69 @@ const config: Config = {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
+                // Design System Colors
+                navy: "#0a2540",
+                "navy-mid": "#1a3a5c",
+                orange: "#e85d26",
+                "orange-light": "#fff1eb",
+                "orange-mid": "#f47340",
+                "bg-page": "#f3f4f6",
+                "bg-card": "#ffffff",
+                "text-primary": "#111827",
+                "text-secondary": "#6b7280",
+                "text-muted": "#9ca3af",
+                ds: {
+                    green: "#0e9f6e",
+                    "green-light": "#ecfdf5",
+                    amber: "#d97706",
+                    red: "#dc2626",
+                },
+                // Legacy shram tokens (keep for backward compat)
+                shram: {
+                    dark: "#0a2540",
+                    primary: "#0052A3",
+                    accent: "#e85d26",
+                    neutral: "#6b7280",
+                    bg: "#f3f4f6",
+                },
                 brand: {
-                    deep: "#003366",
+                    deep: "#0a2540",
                     blue: "#0066FF",
                     cyan: "#00C4FF",
                 },
-                worker: {
-                    primary: "#0066FF",
-                },
-                employer: {
-                    primary: "#059669",
-                },
-                bg: {
-                    surface: "#F5F7FB",
-                },
+            },
+            fontFamily: {
+                outfit: ["var(--font-outfit)", "sans-serif"],
+                dmsans: ["var(--font-dmsans)", "sans-serif"],
             },
             borderRadius: {
                 lg: "var(--radius)",
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
+            },
+            keyframes: {
+                "progress-fill": {
+                    "0%": { width: "0%" },
+                    "100%": { width: "100%" },
+                },
+                "fade-in": {
+                    "0%": { opacity: "0" },
+                    "100%": { opacity: "1" },
+                },
+                "slide-up": {
+                    "0%": { transform: "translateY(20px)", opacity: "0" },
+                    "100%": { transform: "translateY(0)", opacity: "1" },
+                },
+                "toast-in": {
+                    "0%": { transform: "translateY(100px)", opacity: "0" },
+                    "100%": { transform: "translateY(0)", opacity: "1" },
+                },
+            },
+            animation: {
+                "progress-fill": "progress-fill 2s linear forwards",
+                "fade-in": "fade-in 0.5s ease forwards",
+                "slide-up": "slide-up 0.5s ease forwards",
+                "toast-in": "toast-in 0.3s ease forwards",
             },
         },
     },

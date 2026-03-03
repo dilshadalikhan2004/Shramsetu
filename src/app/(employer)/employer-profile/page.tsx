@@ -1,76 +1,69 @@
 "use client";
 
+import { Star, Pencil } from "lucide-react";
 import { useUserStore } from "@/store/useUserStore";
-import { Button } from "@/components/ui/button";
-import { Building2, IndianRupee, MapPin, CheckCircle, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
+import EmptyState from "@/components/shared/EmptyState";
 
 export default function EmployerProfilePage() {
-    const { employerProfile } = useUserStore();
-    const router = useRouter();
+    const { generalProfile, employerProfile } = useUserStore();
 
-    if (!employerProfile) {
-        return <div className="p-4 text-center">Loading Profile...</div>;
-    }
+    const companyName = employerProfile?.companyName || generalProfile?.name || "Company";
+    const initials = companyName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+    const city = generalProfile?.city || "";
+    const categories = employerProfile?.categories ?? [];
+    const gst = employerProfile?.gstNumber;
 
     return (
-        <div className="pb-20">
-            <div className="bg-emerald-700 dark:bg-emerald-950 text-white p-6 pb-12 rounded-b-[2rem] shadow-lg">
-                <div className="flex justify-between items-start mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold">Employer Profile</h1>
-                        <p className="opacity-80 text-sm">Manage business details</p>
+        <div className="max-w-2xl space-y-5">
+            {/* Company Header */}
+            <div className="bg-white rounded-2xl border p-6" style={{ borderColor: "#e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+                <div className="flex items-start gap-5">
+                    <div className="w-20 h-20 rounded-2xl flex items-center justify-center font-outfit font-bold text-white text-2xl shrink-0" style={{ background: "#0a2540" }}>
+                        {initials}
                     </div>
-                    <div className="bg-white/10 p-2 rounded-lg">
-                        <Building2 className="w-6 h-6" />
+                    <div className="flex-1">
+                        <h1 className="font-outfit font-bold" style={{ fontSize: 24, color: "#111827" }}>{companyName}</h1>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {(categories.length > 0 ? categories : [city || "India"]).map((t) => (
+                                <span key={t} className="px-3 py-0.5 rounded-full font-dmsans" style={{ fontSize: 12, background: "#f3f4f6", color: "#6b7280" }}>{t}</span>
+                            ))}
+                        </div>
+                        {gst && <p className="font-mono mt-2" style={{ fontSize: 11, color: "#9ca3af" }}>GST: {gst}</p>}
                     </div>
                 </div>
 
-                <div className="text-center mb-4">
-                    <h2 className="text-3xl font-bold mb-1">{employerProfile.companyName}</h2>
-                    <p className="text-sm opacity-80 flex items-center justify-center gap-1">
-                        <CheckCircle className="w-3 h-3" /> Verified Employer
-                    </p>
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-0 mt-5 rounded-xl overflow-hidden border" style={{ borderColor: "#f3f4f6" }}>
+                    {[
+                        { label: "Workers Hired", value: employerProfile?.hiringHistoryCount ?? "—" },
+                        { label: "Active Jobs", value: "—" },
+                        { label: "Rating", value: employerProfile?.rating ? `★ ${employerProfile.rating}` : "—" },
+                    ].map((s, i) => (
+                        <div key={s.label} className="py-4 text-center" style={{ borderRight: i < 2 ? "1px solid #f3f4f6" : "none" }}>
+                            <p className="font-outfit font-bold" style={{ fontSize: 20, color: "#111827" }}>{s.value}</p>
+                            <p style={{ fontSize: 11, color: "#9ca3af" }}>{s.label}</p>
+                        </div>
+                    ))}
                 </div>
             </div>
 
-            <div className="px-4 -mt-8 space-y-4">
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-md border border-gray-100 dark:border-slate-800 flex justify-between text-center">
-                    <div className="flex-1">
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{employerProfile.hiringHistoryCount}</p>
-                        <p className="text-xs text-gray-400 mt-1">Hires Made</p>
-                    </div>
-                    <div className="w-px bg-gray-200 dark:bg-slate-800"></div>
-                    <div className="flex-1">
-                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{employerProfile.rating}</p>
-                        <p className="text-xs text-gray-400 mt-1">Rating</p>
-                    </div>
+            {/* Reviews */}
+            <div className="bg-white rounded-2xl border p-5" style={{ borderColor: "#e5e7eb" }}>
+                <h2 className="font-outfit font-semibold mb-4" style={{ fontSize: 16, color: "#111827" }}>Worker Reviews</h2>
+                <div className="py-6 text-center">
+                    <Star className="w-8 h-8 mx-auto mb-2" style={{ color: "#d1d5db" }} />
+                    <p style={{ fontSize: 13, color: "#9ca3af" }}>No reviews yet. Reviews from workers will appear here after completing jobs.</p>
                 </div>
-
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800">
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-sm flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-emerald-600" /> Focus Sectors
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                        {employerProfile.categories.map(cat => (
-                            <span key={cat} className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 px-3 py-1 rounded-md text-xs font-medium">
-                                {cat}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-800">
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-3 text-sm flex items-center gap-2">
-                        <Users className="w-4 h-4 text-emerald-600" /> Team Management
-                    </h3>
-                    <p className="text-sm text-gray-500 italic">No active teams created yet.</p>
-                </div>
-
-                <Button className="w-full bg-emerald-700 hover:bg-emerald-800 text-white" onClick={() => router.push('/setup/employer')}>
-                    Edit Business Details
-                </Button>
             </div>
+
+            {/* Edit Button */}
+            <button
+                className="w-full h-12 rounded-xl font-dmsans font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+                style={{ border: "1.5px solid #e85d26", color: "#e85d26", background: "white" }}
+            >
+                <Pencil className="w-4 h-4" />
+                Edit Company Profile
+            </button>
         </div>
     );
 }

@@ -1,1 +1,115 @@
-{"pages":{},"app":{},"appUsingSizeAdjust":false,"pagesUsingSizeAdjust":false}
+{
+  "app": {
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/dashboard/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/employer-analytics/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/employer-applications/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/employer-candidates/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/employer-chat/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/employer-profile/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/my-jobs/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/payments/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(employer)/post-job/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/applications/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/chat/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/earnings/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/help/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/home/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/notifications/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/settings/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/teams/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/(worker)/worker-profile/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/_not-found/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/auth/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/kyc/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/language-selection/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/role-selection/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/setup/employer/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/setup/worker/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ],
+    "[project]/Downloads/Shramsetu-Dillu-shramsetu/src/app/splash/page": [
+      "static/media/1b99372b3eaef0c8-s.p.758e15a8.woff2",
+      "static/media/5c285b27cdda1fe8-s.p.a62025f2.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}
