@@ -1,0 +1,326 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  phone         String   @unique
+  name          String
+  email         String?
+  city          String
+  language      String   @default("en")
+  kycStatus     String   @default("none") // none, pending, verified
+  profileImage  String?
+  lastLogin     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Profiles
+  workerProfile   WorkerProfile?
+  employerProfile EmployerProfile?
+
+  // Relations
+  jobsPosted      Job[]        @relation("EmployerJobs")
+  applications    Application[]
+  sentMessages    Message[]    @relation("SentMessages")
+  receivedMessages Message[]   @relation("ReceivedMessages")
+  teamMemberships TeamMember[]
+  teamsOwned      Team[]       @relation("TeamOwner")
+  reviews         Review[]     @relation("ReviewsReceived")
+  reviewsGiven    Review[]     @relation("ReviewsGiven")
+  earnings        Earning[]
+  supportQueries  SupportQuery[]
+
+  @@map("users")
+}
+
+model OTP {
+  id           String   @id @default(cuid())
+  phone        String
+  code         String   // Should be hashed in production
+  expiresAt    DateTime
+  verified     Boolean  @default(false)
+  attemptCount Int      @default(0) // Track failed attempts (max 5)
+  lockedUntil  DateTime? // Lock after too many failed attempts
+  createdAt    DateTime @default(now())
+
+  @@index([phone])
+  @@map("otps")
+}
+
+// ============================================
+// WORKER PROFILE
+// ============================================
+
+model WorkerProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  skills          String   // JSON array of skills
+  experienceYears Int
+  dailyRate       Int
+  serviceRadiusKm Int
+  portfolioImages String   // JSON array of image URLs
+  availability    Boolean  @default(true)
+  rating          Float    @default(0)
+  ratingCount     Int      @default(0)
+  
+  bio             String?
+  certifications  String?  // JSON array
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("worker_profiles")
+}
+
+// ============================================
+// EMPLOYER PROFILE
+// ============================================
+
+model EmployerProfile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  companyName         String?
+  categories          String   // JSON array
+  gstNumber           String?
+  hiringHistoryCount  Int      @default(0)
+  rating              Float    @default(0)
+  ratingCount         Int      @default(0)
+  
+  verified            Boolean  @default(false)
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("employer_profiles")
+}
+
+// ============================================
+// JOBS
+// ============================================
+
+model Job {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  requirements    String   // JSON array
+  
+  employerId      String
+  employer        User     @relation("EmployerJobs", fields: [employerId], references: [id])
+  
+  category        String
+  location        String
+  latitude        Float?
+  longitude       Float?
+  
+  salary          Int      // Daily rate
+  duration        String   // e.g., "3 months", "15 days"
+  positions       Int      @default(1)
+  
+  urgent          Boolean  @default(false)
+  verified        Boolean  @default(false)
+  status          String   @default("open") // open, closed, filled
+  
+  startDate       DateTime?
+  endDate         DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  applications    Application[]
+
+  @@index([category])
+  @@index([status])
+  @@index([employerId])
+  @@map("jobs")
+}
+
+// ============================================
+// APPLICATIONS
+// ============================================
+
+model Application {
+  id          String   @id @default(cuid())
+  
+  jobId       String
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  
+  workerId    String
+  worker      User     @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  
+  status      String   @default("pending") // pending, accepted, rejected, completed
+  bidAmount   Int
+  message     String?
+  
+  startDate   DateTime?
+  endDate     DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  earnings    Earning[]
+
+  @@unique([jobId, workerId])
+  @@index([workerId])
+  @@index([status])
+  @@map("applications")
+}
+
+// ============================================
+// EARNINGS
+// ============================================
+
+model Earning {
+  id              String   @id @default(cuid())
+  
+  applicationId   String
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  workerId        String
+  worker          User     @relation(fields: [workerId], references: [id])
+  
+  jobTitle        String
+  companyName     String
+  days            Int
+  ratePerDay      Int
+  totalAmount     Int
+  
+  status          String   @default("pending") // pending, paid
+  paidAt          DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([workerId])
+  @@index([status])
+  @@map("earnings")
+}
+
+// ============================================
+// TEAMS
+// ============================================
+
+model Team {
+  id              String   @id @default(cuid())
+  name            String
+  specialty       String
+  
+  ownerId         String
+  owner           User     @relation("TeamOwner", fields: [ownerId], references: [id])
+  
+  jobsCompleted   Int      @default(0)
+  rating          Float    @default(0)
+  ratingCount     Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  members         TeamMember[]
+
+  @@index([ownerId])
+  @@map("teams")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  role      String   @default("member") // owner, member
+  joinedAt  DateTime @default(now())
+
+  @@unique([teamId, userId])
+  @@index([userId])
+  @@map("team_members")
+}
+
+// ============================================
+// MESSAGING
+// ============================================
+
+model Message {
+  id          String   @id @default(cuid())
+  
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  
+  receiverId  String
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  
+  content     String
+  read        Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+// ============================================
+// REVIEWS & RATINGS
+// ============================================
+
+model Review {
+  id          String   @id @default(cuid())
+  
+  reviewerId  String
+  reviewer    User     @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+  
+  revieweeId  String
+  reviewee    User     @relation("ReviewsReceived", fields: [revieweeId], references: [id])
+  
+  rating      Int      // 1-5
+  comment     String?
+  jobTitle    String?
+  
+  createdAt   DateTime @default(now())
+
+  @@index([revieweeId])
+  @@map("reviews")
+}
+
+// ============================================
+// SUPPORT QUERIES
+// ============================================
+
+model SupportQuery {
+  id          String   @id @default(cuid())
+  
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  
+  subject     String
+  message     String
+  status      String   @default("open") // open, in-progress, resolved
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([userId])
+  @@map("support_queries")
+}

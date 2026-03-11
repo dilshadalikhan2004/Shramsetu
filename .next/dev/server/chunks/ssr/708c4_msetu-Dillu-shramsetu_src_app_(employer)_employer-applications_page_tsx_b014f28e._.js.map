@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/LENOVO/Downloads/Shramsetu-Dillu-shramsetu/src/app/%28employer%29/employer-applications/page.tsx"],"sourcesContent":["\"use client\";\r\n\r\nexport default function EmployerApplicationsPage() {\r\n    return (\r\n        <div className=\"flex flex-col items-center justify-center min-h-[60vh] text-center\">\r\n            <h1 className=\"text-2xl font-bold text-gray-800 mb-2\">Applications</h1>\r\n            <p className=\"text-gray-600\">This feature is currently under development.</p>\r\n        </div>\r\n    );\r\n}\r\n"],"names":[],"mappings":";;;;;AAAA;;AAEe,SAAS;IACpB,qBACI,8RAAC;QAAI,WAAU;;0BACX,8RAAC;gBAAG,WAAU;0BAAwC;;;;;;0BACtD,8RAAC;gBAAE,WAAU;0BAAgB;;;;;;;;;;;;AAGzC"}}]
+}

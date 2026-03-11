@@ -1,0 +1,3 @@
+{
+  "/api/ai/rank-candidates/route": "app/api/ai/rank-candidates/route.js"
+}

@@ -113,7 +113,8 @@ export const useUserStore = create<UserState>()(
                 if (token) {
                     localStorage.setItem('token', token);
                     if (typeof document !== 'undefined') {
-                        document.cookie = `auth_token=${token}; path=/; max-age=31536000; SameSite=Lax`;
+                        const isProd = process.env.NODE_ENV === 'production';
+                        document.cookie = `auth_token=${token}; path=/; max-age=31536000; SameSite=Strict${isProd ? '; Secure' : ''}`;
                     }
                 }
 
@@ -159,7 +160,8 @@ export const useUserStore = create<UserState>()(
             logout: () => {
                 localStorage.removeItem('token');
                 if (typeof document !== 'undefined') {
-                    document.cookie = `auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+                    const isProd = process.env.NODE_ENV === 'production';
+                    document.cookie = `auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict${isProd ? '; Secure' : ''}`;
                 }
                 set({
                     isAuthenticated: false,

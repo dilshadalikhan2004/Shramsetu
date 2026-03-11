@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///c:/Users/LENOVO/Downloads/Shramsetu-Dillu-shramsetu/src/app/page.tsx"],"sourcesContent":["\"use client\";\r\n\r\nimport { useEffect } from \"react\";\r\nimport { useRouter } from \"next/navigation\";\r\n\r\n// Root page now auto-redirects to the splash screen\r\nexport default function RootPage() {\r\n    const router = useRouter();\r\n    useEffect(() => {\r\n        router.replace(\"/splash\");\r\n    }, [router]);\r\n\r\n    return (\r\n        <div className=\"fixed inset-0 flex items-center justify-center\" style={{ background: \"#0a2540\" }}>\r\n            <div className=\"w-8 h-8 rounded-full border-4 border-white/20 border-t-[#e85d26] animate-spin\" />\r\n        </div>\r\n    );\r\n}\r\n"],"names":[],"mappings":";;;;;AAEA;AACA;;;AAHA;;;AAMe,SAAS;;IACpB,MAAM,SAAS,IAAA,kMAAS;IACxB,IAAA,0NAAS;8BAAC;YACN,OAAO,OAAO,CAAC;QACnB;6BAAG;QAAC;KAAO;IAEX,qBACI,6OAAC;QAAI,WAAU;QAAiD,OAAO;YAAE,YAAY;QAAU;kBAC3F,cAAA,6OAAC;YAAI,WAAU;;;;;;;;;;;AAG3B;GAXwB;;QACL,kMAAS;;;KADJ"}},
+    {"offset": {"line": 58, "column": 0}, "map": {"version":3,"sources":["file:///c:/Users/LENOVO/Downloads/Shramsetu-Dillu-shramsetu/node_modules/next/navigation.js"],"sourcesContent":["module.exports = require('./dist/client/components/navigation')\n"],"names":[],"mappings":"AAAA,OAAO,OAAO","ignoreList":[0]}}]
+}

@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { Wrench, Building2, ChevronRight, ShieldCheck } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/TranslationProvider";
 
 export default function RoleSelectionPage() {
+    const { t } = useTranslation();
     const router = useRouter();
     const { setMode } = useUserStore();
     const [selected, setSelected] = useState<"worker" | "employer" | null>(null);
@@ -48,22 +50,22 @@ export default function RoleSelectionPage() {
             <div className="flex-1 max-w-sm mx-auto w-full pt-12">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="font-outfit font-bold" style={{ fontSize: 28, color: "#111827" }}>Who are you?</h1>
-                    <p className="mt-1" style={{ fontSize: 14, color: "#6b7280" }}>Choose your account type to get started.</p>
+                    <h1 className="font-outfit font-bold" style={{ fontSize: 28, color: "#111827" }}>{t('role.title')}</h1>
+                    <p className="mt-1" style={{ fontSize: 14, color: "#6b7280" }}>{t('role.subtitle')}</p>
                 </div>
 
                 {/* Role Cards */}
                 <div className="space-y-3">
                     <Card
                         role="worker"
-                        title="I am a Worker"
-                        sub="Find verified daily wage jobs near you"
+                        title={t('role.workerTitle')}
+                        sub={t('role.workerSub')}
                         icon={<Wrench className="w-6 h-6" style={{ color: "#e85d26" }} />}
                     />
                     <Card
                         role="employer"
-                        title="I am an Employer"
-                        sub="Post jobs and hire verified labor"
+                        title={t('role.employerTitle')}
+                        sub={t('role.employerSub')}
                         icon={<Building2 className="w-6 h-6" style={{ color: "#e85d26" }} />}
                     />
                 </div>
@@ -72,7 +74,7 @@ export default function RoleSelectionPage() {
                 <div className="flex items-center justify-center gap-2 mt-6">
                     <ShieldCheck className="w-4 h-4" style={{ color: "#0e9f6e" }} />
                     <span className="font-dmsans font-semibold tracking-wider" style={{ fontSize: 11, color: "#9ca3af", textTransform: "uppercase" }}>
-                        100% SECURE &amp; VERIFIED
+                        {t('role.secure')}
                     </span>
                 </div>
             </div>
@@ -88,12 +90,12 @@ export default function RoleSelectionPage() {
                         cursor: selected ? "pointer" : "not-allowed",
                     }}
                 >
-                    Next Step
+                    {t('role.next')}
                 </button>
                 <p className="text-center font-dmsans" style={{ fontSize: 14, color: "#6b7280" }}>
-                    Already have an account?{" "}
+                    {t('role.haveAccount')}{" "}
                     <button onClick={() => router.push("/auth")} className="font-semibold" style={{ color: "#e85d26" }}>
-                        Sign In
+                        {t('role.signIn')}
                     </button>
                 </p>
             </div>

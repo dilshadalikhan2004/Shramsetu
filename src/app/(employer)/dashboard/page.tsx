@@ -4,11 +4,13 @@ import { ArrowRight, Briefcase, MessageSquare, TrendingUp, TrendingDown, Users, 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
+import { useAppDataStore } from "@/store/useAppDataStore";
 import { AnimatedList, AnimatedListItem, AnimatedNumber, AnimatedButton, FadeIn } from "@/components/ui/animations";
 import { motion } from "framer-motion";
 import EmptyState from "@/components/shared/EmptyState";
 import StatCardSkeleton from "@/components/shared/StatCardSkeleton";
 import ApplicantRowSkeleton from "@/components/shared/ApplicantRowSkeleton";
+import { useTranslation } from "@/lib/i18n/TranslationProvider";
 
 interface DashboardStats {
     activeJobs: number;
@@ -24,95 +26,67 @@ interface RecentApplication {
     worker_color: string;
     worker_rating: number;
     job_title: string;
-    bid_amount: number;
+    bid_amount: string;
     status: string;
     created_at: string;
 }
 
 export default function EmployerDashboard() {
+    const { t } = useTranslation();
     const router = useRouter();
     const { generalProfile } = useUserStore();
+    const { jobs } = useAppDataStore();
     const [stats, setStats] = useState<DashboardStats>({ activeJobs: 0, totalApplicants: 0, totalHires: 0, rating: 0 });
     const [recentApps, setRecentApps] = useState<RecentApplication[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchDashboard() {
-            const userId = generalProfile?.id;
-            if (!userId) { setLoading(false); return; }
+        function updateDashboard() {
             setLoading(true);
 
-            // Fetch employer profile
-            const empProfile: any = null;
+            // Filter jobs for this employer
+            const myJobs = jobs.filter(j => j.employer_id === generalProfile?.id || j.employer_id === 'self');
+            const activeJobsCount = myJobs.filter(j => j.status === 'active').length;
 
-            // Fetch active jobs count
-            const activeCount = 0;
+            // Calculate total applicants
+            const allCandidates = myJobs.flatMap(j =>
+                j.candidates.map(c => ({ ...c, jobTitle: j.title }))
+            );
+            const totalApplicants = allCandidates.length;
 
-            // Fetch total applicants
-            const myJobs: any[] = [];
-            const myJobIds = (myJobs ?? []).map((j: any) => j.id);
-
-            let totalApplicants = 0;
-            if (myJobIds.length > 0) {
-                const count = 0;
-                totalApplicants = count ?? 0;
-            }
+            // Calculate hires (accepted status)
+            const totalHires = allCandidates.filter(c => c.status === 'accepted' || c.status === 'completed').length;
 
             setStats({
-                activeJobs: activeCount ?? empProfile?.active_jobs ?? 0,
+                activeJobs: activeJobsCount,
                 totalApplicants,
-                totalHires: empProfile?.total_hires ?? 0,
-                rating: empProfile?.rating_avg ?? 0,
+                totalHires,
+                rating: 4.8 // Mock rating for now or fetch from profile
             });
 
-            // Fetch recent applications
-            if (myJobIds.length > 0) {
-                const apps: any[] = [];
+            // Map recent applications
+            setRecentApps(allCandidates.slice(0, 5).map(c => ({
+                id: `${c.id}-${Date.now()}`,
+                worker_name: c.name,
+                worker_init: c.init,
+                worker_color: c.color,
+                worker_rating: c.rating,
+                job_title: c.jobTitle,
+                bid_amount: c.bid,
+                status: c.status,
+                created_at: t('common.justNow')
+            })));
 
-                if (apps && apps.length > 0) {
-                    const workerIds = [...new Set(apps.map((a: any) => a.worker_id))];
-                    const workers: any[] = [];
-                    const workerMap = new Map((workers ?? []).map((w: any) => [w.id, w]));
-
-                    const workerProfiles: any[] = [];
-                    const wpMap = new Map((workerProfiles ?? []).map((w: any) => [w.id, w]));
-
-                    const jobMap = new Map<string, string>();
-                    if (myJobs) {
-                        const jobDetails: any[] = [];
-                        (jobDetails ?? []).forEach((j: any) => jobMap.set(j.id, j.title));
-                    }
-
-                    const colors = ["#0a2540", "#1a3a5c", "#059669", "#7c3aed", "#d97706"];
-                    setRecentApps(apps.map((a: any, i: number) => {
-                        const w: any = workerMap.get(a.worker_id);
-                        const wp: any = wpMap.get(a.worker_id);
-                        const name = w?.full_name ?? "Worker";
-                        return {
-                            id: a.id,
-                            worker_name: name,
-                            worker_init: name[0]?.toUpperCase() ?? "W",
-                            worker_color: colors[i % colors.length],
-                            worker_rating: wp?.rating_avg ?? 0,
-                            job_title: jobMap.get(a.job_id) ?? "Job",
-                            bid_amount: a.bid_amount ?? 0,
-                            status: a.status,
-                            created_at: a.created_at,
-                        };
-                    }));
-                }
-
-                setLoading(false);
-            }
-            fetchDashboard();
+            setLoading(false);
         }
-    }, [generalProfile?.id]);
+        updateDashboard();
+    }, [jobs, generalProfile?.id, t]);
 
     const statCards = [
-        { label: "Active Jobs", value: stats.activeJobs, prefix: "", icon: Briefcase, iconBg: "#fff1eb", iconColor: "#e85d26", change: "" },
-        { label: "Total Applicants", value: stats.totalApplicants, prefix: "", icon: Users, iconBg: "#eff6ff", iconColor: "#2563eb", change: "" },
-        { label: "Hires Made", value: stats.totalHires, prefix: "", icon: Target, iconBg: "#ecfdf5", iconColor: "#0e9f6e", change: "" },
-        { label: "Rating", value: Math.round(stats.rating * 10) / 10, prefix: "", icon: BarChart2, iconBg: "#f5f3ff", iconColor: "#7c3aed", change: "" },
+        { label: t('employer.activeJobs'), value: stats.activeJobs, prefix: "", icon: Briefcase, iconBg: "#fff1eb", iconColor: "#e85d26", change: "" },
+        { label: t('employer.totalApplicants'), value: stats.totalApplicants, prefix: "", icon: Users, iconBg: "#eff6ff", iconColor: "#2563eb", change: "" },
+        { label: t('employer.hiresMade'), value: stats.totalHires, prefix: "", icon: Target, iconBg: "#ecfdf5", iconColor: "#0e9f6e", change: "" },
+        { label: t('worker.rating'), value: Math.round(stats.rating * 10) / 10, prefix: "", icon: BarChart2, iconBg: "#f5f3ff", iconColor: "#7c3aed", change: "" },
     ];
 
     return (
@@ -121,9 +95,9 @@ export default function EmployerDashboard() {
             <FadeIn>
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="font-outfit font-bold" style={{ fontSize: 24, color: "#111827" }}>Dashboard</h1>
+                        <h1 className="font-outfit font-bold" style={{ fontSize: 24, color: "#111827" }}>{t('employer.dashboard')}</h1>
                         <p className="font-dmsans" style={{ fontSize: 14, color: "#6b7280" }}>
-                            Welcome back{generalProfile?.name ? `, ${generalProfile.name}` : ""}
+                            {t('employer.welcomeBack')}{generalProfile?.name ? `, ${generalProfile.name}` : ""}
                         </p>
                     </div>
                     <AnimatedButton
@@ -131,7 +105,7 @@ export default function EmployerDashboard() {
                         className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-dmsans font-semibold text-sm"
                         style={{ background: "#e85d26", color: "white" }}
                     >
-                        Post New Job <ArrowRight className="w-4 h-4" />
+                        {t('employer.postNewJob')} <ArrowRight className="w-4 h-4" />
                     </AnimatedButton>
                 </div>
             </FadeIn>
@@ -174,13 +148,13 @@ export default function EmployerDashboard() {
             <FadeIn delay={0.2}>
                 <div className="bg-white rounded-2xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
                     <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "#f3f4f6" }}>
-                        <h3 className="font-outfit font-bold" style={{ fontSize: 16, color: "#111827" }}>Recent Applications</h3>
+                        <h3 className="font-outfit font-bold" style={{ fontSize: 16, color: "#111827" }}>{t('employer.recentApplications')}</h3>
                         <AnimatedButton
-                            onClick={() => router.push("/employer-applications")}
+                            onClick={() => router.push("/my-jobs?tab=applications")}
                             className="flex items-center gap-1 font-dmsans font-medium"
                             style={{ fontSize: 14, color: "#e85d26" }}
                         >
-                            View All <ArrowRight className="w-4 h-4" />
+                            {t('common.viewAll')} <ArrowRight className="w-4 h-4" />
                         </AnimatedButton>
                     </div>
 
@@ -191,10 +165,10 @@ export default function EmployerDashboard() {
                     ) : recentApps.length === 0 ? (
                         <EmptyState
                             icon={<FileText className="w-8 h-8" />}
-                            title="No applications yet"
-                            subtitle="Post a job to start receiving applications from workers."
+                            title={t('employer.noApplicationsYet')}
+                            subtitle={t('employer.postJobToReceiveAppsDesc')}
                             action={() => router.push("/post-job")}
-                            actionLabel="Post a Job"
+                            actionLabel={t('employer.postJob')}
                         />
                     ) : (
                         <AnimatedList>
@@ -213,7 +187,7 @@ export default function EmployerDashboard() {
                                             <div>
                                                 <p className="font-dmsans font-bold" style={{ fontSize: 14, color: "#111827" }}>{app.worker_name}</p>
                                                 <p style={{ fontSize: 12, color: "#6b7280" }}>
-                                                    {app.job_title} · ₹{app.bid_amount?.toLocaleString("en-IN")}/day
+                                                    {app.job_title} · {app.bid_amount}
                                                 </p>
                                             </div>
                                         </div>
@@ -223,7 +197,7 @@ export default function EmployerDashboard() {
                                                 background: app.status === "accepted" ? "#ecfdf5" : app.status === "rejected" ? "#fef2f2" : "#fffbeb",
                                                 color: app.status === "accepted" ? "#0e9f6e" : app.status === "rejected" ? "#dc2626" : "#d97706",
                                             }}>
-                                            {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                                            {t(`common.status_labels.${app.status}`)}
                                         </span>
                                     </motion.div>
                                 </AnimatedListItem>

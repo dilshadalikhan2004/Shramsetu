@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,10 +6,13 @@ import { AnimatedList, AnimatedListItem, AnimatedButton, FadeIn, showToast } fro
 import { motion } from "framer-motion";
 
 import { useUserStore } from "@/store/useUserStore";
+import { useAppDataStore } from "@/store/useAppDataStore";
+import { useNotificationStore } from "@/store/useNotificationStore";
 import EmptyState from "@/components/shared/EmptyState";
 import JobCardSkeleton from "@/components/shared/JobCardSkeleton";
 import JobMatchBadge from "@/components/worker/JobMatchBadge";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/lib/i18n/TranslationProvider";
 
 const CATEGORIES = ["All", "Plumber", "Electrician", "Mason", "Welder", "Painter", "Carpenter", "Labor"];
 
@@ -31,30 +33,44 @@ interface JobListing {
 }
 
 export default function WorkerHome() {
+    const { t } = useTranslation();
     const router = useRouter();
-    const { generalProfile } = useUserStore();
+    const { generalProfile, workerProfile } = useUserStore();
+    const { jobs: storeJobs, addCandidate } = useAppDataStore();
+    const { addNotification } = useNotificationStore();
     const [activeCategory, setActiveCategory] = useState("All");
-    const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
-    const [jobs, setJobs] = useState<JobListing[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Fetch jobs functionality disabled without backend
+    // Derive appliedIds from store
+    const userId = generalProfile?.id;
+    const appliedIds = new Set(
+        storeJobs
+            .filter(j => j.candidates.some(c => c.id === userId))
+            .map(j => j.id)
+    );
+
+    const jobs: JobListing[] = storeJobs
+        .filter(j => j.employer_id !== userId) // Don't see own jobs
+        .map(j => ({
+            id: j.id,
+            title: j.title,
+            category: j.category,
+            location: j.location,
+            city: j.city,
+            daily_rate: j.daily_rate,
+            duration: j.duration,
+            is_urgent: j.is_urgent,
+            skills_required: j.skills_required,
+            employer_id: j.employer_id,
+            employer_name: j.employer_name,
+            employer_verified: j.employer_verified,
+            created_at: j.posted
+        }));
+
     useEffect(() => {
-        async function fetchJobs() {
-            setLoading(true);
-            setJobs([]);
-            setLoading(false);
-        }
-
-        // Fetch already applied jobs
-        async function fetchApplied() {
-            setAppliedIds(new Set());
-        }
-
-        fetchJobs();
-        fetchApplied();
-    }, [generalProfile?.id]);
+        setLoading(false);
+    }, []);
 
     const filteredByCategory = activeCategory === "All" ? jobs : jobs.filter(j => j.category === activeCategory);
     const filtered = searchQuery
@@ -64,26 +80,44 @@ export default function WorkerHome() {
         )
         : filteredByCategory;
 
-    const handleApply = async (jobId: string) => {
-        const userId = generalProfile?.id;
+    const handleApply = (jobId: string) => {
         if (!userId) {
-            showToast("Please log in to apply", "warning");
+            showToast(t('home.loginToApply'), "warning");
             return;
         }
 
-        const error = null;
+        if (appliedIds.has(jobId)) return;
 
-        if (error) {
-            if (error.code === "23505") {
-                showToast("Already applied to this job", "info");
-            } else {
-                showToast("Failed to apply. Try again.", "error");
-            }
-            return;
-        }
+        const job = storeJobs.find(j => j.id === jobId);
+        if (!job) return;
 
-        setAppliedIds(prev => new Set([...prev, jobId]));
-        showToast("Applied Successfully!", "success");
+        const name = generalProfile.name || "Worker";
+        const newCandidate = {
+            id: userId,
+            name,
+            init: name[0]?.toUpperCase() || t('common.workerInitial'),
+            color: "#0a2540",
+            rating: workerProfile?.rating || 5.0,
+            exp: workerProfile?.experienceYears ? `${workerProfile.experienceYears} years` : t('common.newMember'),
+            verified: generalProfile.kycStatus === 'verified',
+            bid: job.wage,
+            excerpt: workerProfile?.bio || t('home.defaultBio'),
+            status: "pending" as const,
+        };
+
+        addCandidate(jobId, newCandidate);
+
+        // Notify employer
+        addNotification({
+            type: "job",
+            title: t('home.newApplicationTitle'),
+            body: `${name} ${t('home.newApplicationBody')} "${job.title}".`,
+            time: t('common.justNow'),
+            unread: true,
+            role: "employer"
+        });
+
+        showToast(t('home.applySuccess'), "success");
     };
 
     return (
@@ -96,7 +130,7 @@ export default function WorkerHome() {
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search jobs by title or location..."
+                        placeholder={t('home.searchPlaceholder')}
                         className="w-full h-10 rounded-xl pl-9 pr-4 text-sm outline-none border"
                         style={{ background: "#f8fafc", color: "#374151", borderColor: "#e5e7eb" }}
                     />
@@ -120,7 +154,7 @@ export default function WorkerHome() {
                                 border: activeCategory === cat ? "none" : "1px solid #e5e7eb",
                             }}
                         >
-                            {cat}
+                            {cat === "All" ? t('common.viewAll') : t(`common.categories.${cat.toLowerCase()}`)}
                         </AnimatedButton>
                     ))}
                 </div>
@@ -130,7 +164,7 @@ export default function WorkerHome() {
             <FadeIn delay={0.15}>
                 <div className="flex items-center justify-between">
                     <span className="font-outfit font-semibold" style={{ fontSize: 16, color: "#111827" }}>
-                        {loading ? "Loading jobs..." : `Available Jobs (${filtered.length})`}
+                        {loading ? t('common.loading') : `${t('home.availableJobs')} (${filtered.length})`}
                     </span>
                 </div>
             </FadeIn>
@@ -146,12 +180,12 @@ export default function WorkerHome() {
             {!loading && filtered.length === 0 && (
                 <EmptyState
                     icon={<Briefcase className="w-8 h-8" />}
-                    title="No jobs available"
+                    title={t('home.noJobs')}
                     subtitle={activeCategory !== "All"
-                        ? `No ${activeCategory} jobs found right now. Try a different category.`
-                        : "No jobs posted yet. Check back soon!"}
+                        ? `${t('home.noCategoryJobs')} ${t(`common.categories.${activeCategory.toLowerCase()}`)}. ${t('home.tryDifferentCategory')}`
+                        : t('home.noJobsSub')}
                     action={() => setActiveCategory("All")}
-                    actionLabel="View All Categories"
+                    actionLabel={t('home.viewAllCategories')}
                 />
             )}
 
@@ -193,7 +227,7 @@ export default function WorkerHome() {
                                             ₹{job.daily_rate?.toLocaleString("en-IN")}/day
                                         </p>
                                         {job.is_urgent && (
-                                            <span className="text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-600 font-semibold">Urgent</span>
+                                            <span className="text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-600 font-semibold">{t('common.urgent')}</span>
                                         )}
                                     </div>
                                 </div>
@@ -233,7 +267,7 @@ export default function WorkerHome() {
                                         border: appliedIds.has(job.id) ? "1px solid #d1fae5" : "none",
                                     }}
                                 >
-                                    {appliedIds.has(job.id) ? "✓ Applied" : "Apply Now"}
+                                    {appliedIds.has(job.id) ? `✓ ${t('common.applied')}` : t('common.apply')}
                                 </AnimatedButton>
                             </motion.div>
                         </AnimatedListItem>

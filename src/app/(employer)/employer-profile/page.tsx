@@ -2,9 +2,10 @@
 
 import { Star, Pencil } from "lucide-react";
 import { useUserStore } from "@/store/useUserStore";
-import EmptyState from "@/components/shared/EmptyState";
+import { useTranslation } from "@/lib/i18n/TranslationProvider";
 
 export default function EmployerProfilePage() {
+    const { t } = useTranslation();
     const { generalProfile, employerProfile } = useUserStore();
 
     const companyName = employerProfile?.companyName || generalProfile?.name || "Company";
@@ -35,9 +36,9 @@ export default function EmployerProfilePage() {
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-0 mt-5 rounded-xl overflow-hidden border" style={{ borderColor: "#f3f4f6" }}>
                     {[
-                        { label: "Workers Hired", value: employerProfile?.hiringHistoryCount ?? "—" },
-                        { label: "Active Jobs", value: "—" },
-                        { label: "Rating", value: employerProfile?.rating ? `★ ${employerProfile.rating}` : "—" },
+                        { label: t('employer.hiresMade'), value: employerProfile?.hiringHistoryCount ?? "—" },
+                        { label: t('employer.activeJobs'), value: "—" },
+                        { label: t('worker.rating'), value: employerProfile?.rating ? `★ ${employerProfile.rating}` : "—" },
                     ].map((s, i) => (
                         <div key={s.label} className="py-4 text-center" style={{ borderRight: i < 2 ? "1px solid #f3f4f6" : "none" }}>
                             <p className="font-outfit font-bold" style={{ fontSize: 20, color: "#111827" }}>{s.value}</p>
@@ -49,10 +50,10 @@ export default function EmployerProfilePage() {
 
             {/* Reviews */}
             <div className="bg-white rounded-2xl border p-5" style={{ borderColor: "#e5e7eb" }}>
-                <h2 className="font-outfit font-semibold mb-4" style={{ fontSize: 16, color: "#111827" }}>Worker Reviews</h2>
+                <h2 className="font-outfit font-semibold mb-4" style={{ fontSize: 16, color: "#111827" }}>{t('worker.employerReviews')}</h2>
                 <div className="py-6 text-center">
                     <Star className="w-8 h-8 mx-auto mb-2" style={{ color: "#d1d5db" }} />
-                    <p style={{ fontSize: 13, color: "#9ca3af" }}>No reviews yet. Reviews from workers will appear here after completing jobs.</p>
+                    <p style={{ fontSize: 13, color: "#9ca3af" }}>{t('worker.noReviews')}</p>
                 </div>
             </div>
 
@@ -62,7 +63,7 @@ export default function EmployerProfilePage() {
                 style={{ border: "1.5px solid #e85d26", color: "#e85d26", background: "white" }}
             >
                 <Pencil className="w-4 h-4" />
-                Edit Company Profile
+                {t('settings.editProfile')}
             </button>
         </div>
     );

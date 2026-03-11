@@ -46,6 +46,40 @@
   --radius: 0.5rem;
 }
 
+.dark {
+  --bg-page: #0f172a; /* slate-900 */
+  --bg-card: #1e293b; /* slate-800 */
+  --border: #334155; /* slate-700 */
+  --text-primary: #f8fafc; /* slate-50 */
+  --text-secondary: #94a3b8; /* slate-400 */
+  --text-muted: #64748b; /* slate-500 */
+  --navy: #1e293b;
+  --navy-mid: #334155;
+  --orange-light: rgba(232, 93, 38, 0.15);
+  --green-light: rgba(14, 159, 110, 0.15);
+  --red-light: rgba(220, 38, 38, 0.15);
+
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
 /* ─── Base Reset ───────────────────────────────────── */
 @layer base {
   * {

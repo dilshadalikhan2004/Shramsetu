@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { Camera, MapPin, ChevronDown, Shield, ArrowLeft } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/TranslationProvider";
 
 const SKILL_OPTIONS = ["Plumber", "Electrician", "Mason", "Welder", "Painter", "Carpenter", "Labor"];
 const STEPS = ["Profile", "Skills"];
 
 export default function WorkerSetupPage() {
+    const { t } = useTranslation();
     const router = useRouter();
     const { updateWorkerProfile, generalProfile, updateGeneralProfile } = useUserStore();
 
@@ -47,7 +49,7 @@ export default function WorkerSetupPage() {
         } catch (err) {
             console.error(err);
         }
-        router.push("/kyc");
+        router.push("/home");
     };
 
     return (
@@ -59,7 +61,7 @@ export default function WorkerSetupPage() {
                     className="flex items-center gap-1.5 mb-6 self-start"
                     style={{ fontSize: 14, color: "#6b7280" }}
                 >
-                    <ArrowLeft className="w-4 h-4" /> Back
+                    <ArrowLeft className="w-4 h-4" /> {t('common.back')}
                 </button>
 
                 {/* Step dots */}
@@ -77,7 +79,7 @@ export default function WorkerSetupPage() {
                                     {i < step ? "✓" : i + 1}
                                 </div>
                                 <span style={{ fontSize: 10, color: i === step ? "#e85d26" : "#9ca3af", fontWeight: i === step ? 600 : 400 }}>
-                                    {label}
+                                    {label === "Profile" ? t('worker.steps.profile') : t('worker.steps.skills')}
                                 </span>
                             </div>
                             {i < STEPS.length - 1 && (
@@ -90,7 +92,7 @@ export default function WorkerSetupPage() {
                 {/* Step 0 — Profile */}
                 {step === 0 && (
                     <div className="bg-white rounded-2xl border p-6 space-y-5" style={{ borderColor: "#e5e7eb" }}>
-                        <h2 className="font-outfit font-bold" style={{ fontSize: 20, color: "#111827" }}>Set Up Your Profile</h2>
+                        <h2 className="font-outfit font-bold" style={{ fontSize: 20, color: "#111827" }}>{t('worker.profileTitle')}</h2>
 
                         {/* Avatar upload */}
                         <div className="flex flex-col items-center gap-2">
@@ -100,13 +102,13 @@ export default function WorkerSetupPage() {
                             >
                                 <Camera className="w-7 h-7" style={{ color: "#e85d26" }} />
                             </div>
-                            <span className="font-dmsans font-semibold" style={{ fontSize: 13, color: "#e85d26" }}>Add Photo</span>
+                            <span className="font-dmsans font-semibold" style={{ fontSize: 13, color: "#e85d26" }}>{t('worker.addPhoto')}</span>
                         </div>
 
                         {/* Full Name */}
                         <div>
-                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>Full Name</label>
-                            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Ramesh Kumar"
+                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>{t('worker.fullName')}</label>
+                            <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('worker.fullNamePlaceholder')}
                                 className="w-full h-12 rounded-xl border px-4 text-sm outline-none"
                                 style={{ borderColor: "#e5e7eb", color: "#111827" }}
                                 onFocus={(e) => (e.target.style.borderColor = "#e85d26", e.target.style.boxShadow = "0 0 0 3px rgba(232,93,38,0.1)")}
@@ -115,10 +117,10 @@ export default function WorkerSetupPage() {
 
                         {/* City */}
                         <div>
-                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>City / Area</label>
+                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>{t('worker.cityArea')}</label>
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#9ca3af" }} />
-                                <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Search your city..."
+                                <input value={city} onChange={(e) => setCity(e.target.value)} placeholder={t('worker.cityPlaceholder')}
                                     className="w-full h-12 rounded-xl border pl-9 pr-4 text-sm outline-none"
                                     style={{ borderColor: "#e5e7eb", color: "#111827" }}
                                     onFocus={(e) => (e.target.style.borderColor = "#e85d26")}
@@ -128,12 +130,16 @@ export default function WorkerSetupPage() {
 
                         {/* Primary Skill */}
                         <div>
-                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>Primary Skill</label>
+                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>{t('worker.primarySkill')}</label>
                             <div className="relative">
                                 <select value={skill} onChange={(e) => setSkill(e.target.value)}
                                     className="w-full h-12 rounded-xl border px-4 pr-9 text-sm outline-none appearance-none"
                                     style={{ borderColor: "#e5e7eb", color: "#111827", background: "white" }}>
-                                    {SKILL_OPTIONS.map((s) => <option key={s}>{s}</option>)}
+                                    {SKILL_OPTIONS.map((s) => (
+                                        <option key={s} value={s}>
+                                            {t(`common.categories.${s.toLowerCase()}`)}
+                                        </option>
+                                    ))}
                                 </select>
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "#9ca3af" }} />
                             </div>
@@ -141,7 +147,7 @@ export default function WorkerSetupPage() {
 
                         {/* Daily Rate */}
                         <div>
-                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>Daily Rate (₹)</label>
+                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>{t('worker.dailyRate')} (₹)</label>
                             <div className="flex items-center gap-3">
                                 <button onClick={() => setRate((r) => Math.max(200, r - 50))}
                                     className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"
@@ -162,7 +168,7 @@ export default function WorkerSetupPage() {
                             className="w-full h-12 rounded-xl font-semibold text-white transition-all active:scale-95"
                             style={{ background: "#e85d26" }}
                         >
-                            Save &amp; Continue →
+                            {t('worker.saveContinue')}
                         </button>
                     </div>
                 )}
@@ -170,8 +176,8 @@ export default function WorkerSetupPage() {
                 {/* Step 1 — Skills */}
                 {step === 1 && (
                     <div className="bg-white rounded-2xl border p-6 space-y-5" style={{ borderColor: "#e5e7eb" }}>
-                        <h2 className="font-outfit font-bold" style={{ fontSize: 20, color: "#111827" }}>Select Your Skills</h2>
-                        <p style={{ fontSize: 14, color: "#6b7280" }}>Pick all skills that apply to you.</p>
+                        <h2 className="font-outfit font-bold" style={{ fontSize: 20, color: "#111827" }}>{t('worker.selectSkillsTitle')}</h2>
+                        <p style={{ fontSize: 14, color: "#6b7280" }}>{t('worker.selectSkillsSub')}</p>
 
                         <div className="flex flex-wrap gap-2">
                             {["Pipe Fitting", "Bricklaying", "Blueprint Reading", "Site Safety", "Drainage", "Electrical Wiring", "Welding", "Masonry", "Carpentry", "Painting"].map((s) => {
@@ -193,7 +199,7 @@ export default function WorkerSetupPage() {
                         <button onClick={handleComplete} disabled={skills.length === 0}
                             className="w-full h-12 rounded-xl font-semibold text-white transition-all active:scale-95"
                             style={{ background: skills.length > 0 ? "#e85d26" : "#d1d5db" }}>
-                            Complete Profile →
+                            {t('worker.completeProfile')}
                         </button>
                     </div>
                 )}

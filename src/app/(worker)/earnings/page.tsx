@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import { motion } from "framer-motion";
 import { useUserStore } from "@/store/useUserStore";
 import EmptyState from "@/components/shared/EmptyState";
 import StatCardSkeleton from "@/components/shared/StatCardSkeleton";
+import { useTranslation } from "@/lib/i18n/TranslationProvider";
 
 interface PaymentRecord {
     id: string;
@@ -22,6 +22,7 @@ interface PaymentRecord {
 }
 
 export default function EarningsPage() {
+    const { t } = useTranslation();
     const { generalProfile } = useUserStore();
     const [payments, setPayments] = useState<PaymentRecord[]>([]);
     const [loading, setLoading] = useState(true);
@@ -37,39 +38,14 @@ export default function EarningsPage() {
 
             setLoading(true);
 
-            // Fetch payments
-            const paymentData = [];
+            // No backend connected yet — show empty state
+            const paymentData: PaymentRecord[] = [];
 
-            if (paymentData && paymentData.length > 0) {
-                // Fetch employer info
-                const empIds = [...new Set(paymentData.map(p => p.employer_id))];
-                const { data: employers } = null /* removed supabase */
-                    /* removed supabase */
-                    
-                    ;
-                const empMap = new Map((employers ?? []).map(e => [e.id, e]));
-
-                const colors = ["#0a2540", "#1a3a5c", "#059669", "#7c3aed", "#d97706", "#16a34a"];
-                const mapped = paymentData.map((p, i) => ({
-                    ...p,
-                    employer_name: empMap.get(p.employer_id)?.company_name ?? "Employer",
-                    employer_init: (empMap.get(p.employer_id)?.company_name ?? "E")[0],
-                    employer_color: colors[i % colors.length],
-                }));
-                setPayments(mapped);
-
-                const total = paymentData.reduce((sum, p) => sum + (p.amount ?? 0), 0);
-                const pending = paymentData.filter(p => p.status === "pending").reduce((sum, p) => sum + (p.amount ?? 0), 0);
-                const paid = paymentData.filter(p => p.status === "paid").reduce((sum, p) => sum + (p.amount ?? 0), 0);
-                setTotalEarned(total);
-                setPendingAmount(pending);
-                setPaidAmount(paid);
-            }
-
-            // Fetch jobs completed count
-            const workerProfile = null;
-            setJobsCompleted(workerProfile?.jobs_completed ?? 0);
-
+            setPayments(paymentData);
+            setTotalEarned(0);
+            setPendingAmount(0);
+            setPaidAmount(0);
+            setJobsCompleted(0);
             setLoading(false);
         }
 
@@ -81,12 +57,12 @@ export default function EarningsPage() {
             {/* Header */}
             <FadeIn>
                 <div className="flex items-center justify-between">
-                    <h1 className="font-outfit font-bold" style={{ fontSize: 24, color: "#111827" }}>Earnings</h1>
+                    <h1 className="font-outfit font-bold" style={{ fontSize: 24, color: "#111827" }}>{t('common.earnings')}</h1>
                     <AnimatedButton
                         className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-dmsans font-medium text-sm"
                         style={{ background: "white", border: "1px solid #e5e7eb", color: "#374151" }}
                     >
-                        <Download className="w-4 h-4" /> Export
+                        <Download className="w-4 h-4" /> {t('common.export')}
                     </AnimatedButton>
                 </div>
             </FadeIn>
@@ -99,10 +75,10 @@ export default function EarningsPage() {
             ) : (
                 <AnimatedList className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {[
-                        { label: "Total Earned", value: totalEarned, prefix: "₹", sub: totalEarned > 0 ? "From all jobs" : "No earnings yet", green: true, icon: IndianRupee, iconBg: "#ecfdf5", iconColor: "#0e9f6e" },
-                        { label: "Pending Payment", value: pendingAmount, prefix: "₹", sub: pendingAmount > 0 ? "Awaiting payment" : "No pending", green: false, icon: Calendar, iconBg: "#fffbeb", iconColor: "#d97706" },
-                        { label: "Paid Out", value: paidAmount, prefix: "₹", sub: paidAmount > 0 ? "Successfully paid" : "No payments yet", green: true, icon: TrendingUp, iconBg: "#ecfdf5", iconColor: "#0e9f6e" },
-                        { label: "Jobs Completed", value: jobsCompleted, prefix: "", sub: "Total jobs", green: true, icon: Briefcase, iconBg: "#fff1eb", iconColor: "#e85d26" },
+                        { label: t('worker.totalEarned'), value: totalEarned, prefix: "₹", sub: totalEarned > 0 ? t('worker.fromAllJobs') : t('worker.noEarningsYet'), green: true, icon: IndianRupee, iconBg: "#ecfdf5", iconColor: "#0e9f6e" },
+                        { label: t('worker.pendingPayment'), value: pendingAmount, prefix: "₹", sub: pendingAmount > 0 ? t('worker.awaitingPayment') : t('worker.noPending'), green: false, icon: Calendar, iconBg: "#fffbeb", iconColor: "#d97706" },
+                        { label: t('worker.paidOut'), value: paidAmount, prefix: "₹", sub: paidAmount > 0 ? t('worker.successfullyPaid') : t('worker.noPaymentsYet'), green: true, icon: TrendingUp, iconBg: "#ecfdf5", iconColor: "#0e9f6e" },
+                        { label: t('worker.jobsCompleted'), value: jobsCompleted, prefix: "", sub: t('worker.totalJobs'), green: true, icon: Briefcase, iconBg: "#fff1eb", iconColor: "#e85d26" },
                     ].map((s) => (
                         <AnimatedListItem key={s.label}>
                             <motion.div
@@ -135,7 +111,7 @@ export default function EarningsPage() {
             <FadeIn delay={0.2}>
                 <div className="bg-white rounded-2xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
                     <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "#f3f4f6" }}>
-                        <h3 className="font-outfit font-bold" style={{ fontSize: 16, color: "#111827" }}>Payment History</h3>
+                        <h3 className="font-outfit font-bold" style={{ fontSize: 16, color: "#111827" }}>{t('worker.paymentHistory')}</h3>
                     </div>
 
                     {loading ? (
@@ -154,13 +130,13 @@ export default function EarningsPage() {
                     ) : payments.length === 0 ? (
                         <EmptyState
                             icon={<Wallet className="w-8 h-8" />}
-                            title="No payments yet"
-                            subtitle="When you complete jobs, your payment history will appear here."
+                            title={t('worker.noPaymentsYet')}
+                            subtitle={t('worker.noPaymentsSub')}
                         />
                     ) : (
                         <>
                             <div className="grid grid-cols-4 px-5 py-2.5" style={{ background: "#f8fafc", borderBottom: "1px solid #f3f4f6" }}>
-                                {["Company", "Date", "Status", "Amount"].map((h) => (
+                                {[t('worker.company'), t('worker.date'), t('worker.status'), t('worker.amount')].map((h) => (
                                     <p key={h} className="font-dmsans font-semibold" style={{ fontSize: 12, color: "#9ca3af", textTransform: "uppercase" }}>{h}</p>
                                 ))}
                             </div>
@@ -186,7 +162,7 @@ export default function EarningsPage() {
                                                     background: item.status === "paid" ? "#ecfdf5" : item.status === "failed" ? "#fef2f2" : "#fffbeb",
                                                     color: item.status === "paid" ? "#0e9f6e" : item.status === "failed" ? "#dc2626" : "#d97706"
                                                 }}>
-                                                {item.status === "paid" ? "Paid" : item.status === "failed" ? "Failed" : "Pending"}
+                                                {t(`common.status_labels.${item.status}`)}
                                             </span>
                                             <p className="font-outfit font-bold" style={{
                                                 fontSize: 15,

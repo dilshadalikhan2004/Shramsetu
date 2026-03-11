@@ -1,8 +1,0 @@
-
-> shramsetu@0.1.0 build
-> next build
-
-  ▲ Next.js 14.2.3
-
-   Creating an optimized production build ...
-Terminate batch job (Y/N)? Terminate batch job (Y/N)? 

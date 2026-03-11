@@ -1,0 +1,3 @@
+module.exports=[94013,a=>{"use strict";var b=a.i(74213);function c(){return(0,b.jsxs)("div",{className:"flex flex-col items-center justify-center min-h-[60vh] text-center",children:[(0,b.jsx)("h1",{className:"text-2xl font-bold text-gray-800 mb-2",children:"Candidates"}),(0,b.jsx)("p",{className:"text-gray-600",children:"This feature is currently under development."})]})}a.s(["default",()=>c])}];
+
+//# sourceMappingURL=d91fd_ramsetu-Dillu-shramsetu_src_app_%28employer%29_employer-candidates_page_tsx_13f522bd._.js.map

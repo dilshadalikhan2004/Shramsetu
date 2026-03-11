@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { ArrowLeft, Building2, ChevronDown } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/TranslationProvider";
 
 const SECTORS = ["Construction", "Real Estate", "Logistics", "Manufacturing", "Agriculture", "Retail", "Hospitality", "Infrastructure"];
 
 export default function EmployerSetupPage() {
+    const { t } = useTranslation();
     const router = useRouter();
     const { updateEmployerProfile } = useUserStore();
     const [companyName, setCompanyName] = useState("");
@@ -34,7 +36,7 @@ export default function EmployerSetupPage() {
         } catch (err) {
             console.error(err);
         }
-        router.push("/kyc");
+        router.push("/dashboard");
     };
 
     return (
@@ -42,7 +44,7 @@ export default function EmployerSetupPage() {
             <div className="w-full max-w-sm">
                 <button onClick={() => step === 0 ? router.back() : setStep(0)}
                     className="flex items-center gap-1.5 mb-6" style={{ fontSize: 14, color: "#6b7280" }}>
-                    <ArrowLeft className="w-4 h-4" /> Back
+                    <ArrowLeft className="w-4 h-4" /> {t('common.back')}
                 </button>
 
                 <div className="flex items-center gap-3 mb-6">
@@ -50,18 +52,18 @@ export default function EmployerSetupPage() {
                         <Building2 className="w-5 h-5" style={{ color: "#e85d26" }} />
                     </div>
                     <div>
-                        <h1 className="font-outfit font-bold" style={{ fontSize: 22, color: "#111827" }}>Set Up Company</h1>
-                        <p style={{ fontSize: 13, color: "#6b7280" }}>Step {step + 1} of 2</p>
+                        <h1 className="font-outfit font-bold" style={{ fontSize: 22, color: "#111827" }}>{t('employer.setupTitle')}</h1>
+                        <p style={{ fontSize: 13, color: "#6b7280" }}>{t('common.step')} {step + 1} / 2</p>
                     </div>
                 </div>
 
                 {step === 0 && (
                     <div className="bg-white rounded-2xl border p-6 space-y-4" style={{ borderColor: "#e5e7eb" }}>
-                        <h2 className="font-outfit font-bold" style={{ fontSize: 18, color: "#111827" }}>Company Details</h2>
+                        <h2 className="font-outfit font-bold" style={{ fontSize: 18, color: "#111827" }}>{t('employer.companyDetailsTitle')}</h2>
                         <div>
-                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>Company Name</label>
+                            <label className="block font-semibold mb-1.5" style={{ fontSize: 13, color: "#374151" }}>{t('employer.companyNameLabel')}</label>
                             <input value={companyName} onChange={(e) => setCompanyName(e.target.value)}
-                                placeholder="e.g. Tata Projects Ltd"
+                                placeholder={t('employer.companyNamePlaceholder')}
                                 className="w-full h-12 rounded-xl border px-4 text-sm outline-none"
                                 style={{ borderColor: "#e5e7eb", color: "#111827" }}
                                 onFocus={(e) => (e.target.style.borderColor = "#e85d26")}
@@ -70,15 +72,15 @@ export default function EmployerSetupPage() {
                         <button onClick={() => setStep(1)} disabled={!companyName}
                             className="w-full h-12 rounded-xl font-semibold text-white transition-all active:scale-95"
                             style={{ background: companyName ? "#e85d26" : "#d1d5db" }}>
-                            Next →
+                            {t('common.next')}
                         </button>
                     </div>
                 )}
 
                 {step === 1 && (
                     <div className="bg-white rounded-2xl border p-6 space-y-4" style={{ borderColor: "#e5e7eb" }}>
-                        <h2 className="font-outfit font-bold" style={{ fontSize: 18, color: "#111827" }}>Hiring Sectors</h2>
-                        <p style={{ fontSize: 13, color: "#6b7280" }}>Select the sectors you hire for.</p>
+                        <h2 className="font-outfit font-bold" style={{ fontSize: 18, color: "#111827" }}>{t('employer.hiringSectorsTitle')}</h2>
+                        <p style={{ fontSize: 13, color: "#6b7280" }}>{t('employer.hiringSectorsSubtitle')}</p>
                         <div className="flex flex-wrap gap-2">
                             {SECTORS.map((s) => {
                                 const sel = sectors.includes(s);
@@ -94,7 +96,7 @@ export default function EmployerSetupPage() {
                         <button onClick={handleComplete} disabled={sectors.length === 0}
                             className="w-full h-12 rounded-xl font-semibold text-white transition-all active:scale-95"
                             style={{ background: sectors.length > 0 ? "#e85d26" : "#d1d5db" }}>
-                            Complete Setup →
+                            {t('employer.completeSetup')}
                         </button>
                     </div>
                 )}

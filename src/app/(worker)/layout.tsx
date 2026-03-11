@@ -19,19 +19,7 @@ export default function WorkerLayout({ children }: { children: React.ReactNode }
             router.push("/splash");
             return;
         }
-        // Remove employer redirect to allow shared pages (settings, help, etc.) 
-        // to be accessed by employers while being in this route group.
-
-        if (isProfileReady && !isProfileReady()) {
-            router.push("/setup/worker");
-            return;
-        }
-
-        if (generalProfile?.kycStatus === 'none') {
-            router.push("/kyc");
-            return;
-        }
-    }, [mounted, isAuthenticated, mode, isProfileReady, generalProfile, router]);
+    }, [mounted, isAuthenticated, router]);
 
     if (!mounted) {
         return (

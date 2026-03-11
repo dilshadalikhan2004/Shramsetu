@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import { AnimatedList, AnimatedListItem, AnimatedButton, AnimatedNumber, FadeIn,
 import { motion } from "framer-motion";
 import { useUserStore } from "@/store/useUserStore";
 import EmptyState from "@/components/shared/EmptyState";
+import { useTranslation } from "@/lib/i18n/TranslationProvider";
 
 interface Team {
     id: string;
@@ -19,6 +19,7 @@ interface Team {
 }
 
 export default function TeamsPage() {
+    const { t } = useTranslation();
     const { generalProfile } = useUserStore();
     const [myTeam, setMyTeam] = useState<Team | null>(null);
     const [discoverTeams, setDiscoverTeams] = useState<Team[]>([]);
@@ -30,42 +31,13 @@ export default function TeamsPage() {
             const userId = generalProfile?.id;
             setLoading(true);
 
-            // Fetch all teams
-            const allTeams = [];
+            // No backend connected yet — show empty state
+            const allTeams: any[] = [];
+            const memberTeamIds: string[] = [];
 
-            // Fetch team memberships for user
-            let memberTeamIds: string[] = [];
-            if (userId) {
-                const memberships = [];
-                memberTeamIds = (memberships ?? []).map(m => m.team_id);
-                setJoinedIds(new Set(memberTeamIds));
-            }
-
-            // Fetch member counts
-            if (allTeams && allTeams.length > 0) {
-                const teamIds = allTeams.map(t => t.id);
-                const members = [];
-
-                const countMap = new Map<string, number>();
-                (members ?? []).forEach(m => {
-                    countMap.set(m.team_id, (countMap.get(m.team_id) ?? 0) + 1);
-                });
-
-                const teamsWithCount = allTeams.map(t => ({
-                    ...t,
-                    member_count: countMap.get(t.id) ?? 0,
-                }));
-
-                // User's own team vs discover teams
-                if (userId) {
-                    const owned = teamsWithCount.find(t => t.owner_id === userId);
-                    const joined = teamsWithCount.find(t => memberTeamIds.includes(t.id) && t.owner_id !== userId);
-                    setMyTeam(owned ?? joined ?? null);
-                    setDiscoverTeams(teamsWithCount.filter(t => t.id !== (owned?.id || joined?.id)));
-                } else {
-                    setDiscoverTeams(teamsWithCount);
-                }
-            }
+            setJoinedIds(new Set());
+            setMyTeam(null);
+            setDiscoverTeams([]);
 
             setLoading(false);
         }
@@ -74,24 +46,24 @@ export default function TeamsPage() {
 
     const handleToggleJoin = async (teamId: string) => {
         const userId = generalProfile?.id;
-        if (!userId) { showToast("Please log in first", "warning"); return; }
+        if (!userId) { showToast(t('teams.loginFirst'), "warning"); return; }
 
         if (joinedIds.has(teamId)) {
-            
+
             setJoinedIds(prev => { const n = new Set(prev); n.delete(teamId); return n; });
-            showToast("Left the team", "info");
+            showToast(t('teams.leftTeam'), "info");
         } else {
             const error = null;
-            if (error) { showToast("Failed to join", "error"); return; }
+            if (error) { showToast(t('teams.failedToJoin'), "error"); return; }
             setJoinedIds(prev => new Set([...prev, teamId]));
-            showToast("Joined team!", "success");
+            showToast(t('teams.joinedTeam'), "success");
         }
     };
 
     return (
         <div className="space-y-5">
             <FadeIn>
-                <h1 className="font-outfit font-bold" style={{ fontSize: 24, color: "#111827" }}>Teams</h1>
+                <h1 className="font-outfit font-bold" style={{ fontSize: 24, color: "#111827" }}>{t('teams.title')}</h1>
             </FadeIn>
 
             {/* My Team */}
@@ -105,18 +77,18 @@ export default function TeamsPage() {
                         </div>
                         <div className="grid grid-cols-3 gap-4 mt-4">
                             <div>
-                                <p className="text-xs text-white/60">Members</p>
+                                <p className="text-xs text-white/60">{t('teams.members')}</p>
                                 <AnimatedNumber value={myTeam.member_count ?? 0} className="font-outfit font-bold text-lg" />
                             </div>
                             <div>
-                                <p className="text-xs text-white/60">Rating</p>
+                                <p className="text-xs text-white/60">{t('teams.rating')}</p>
                                 <div className="flex items-center gap-1">
                                     <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                                     <span className="font-outfit font-bold text-lg">{myTeam.rating_avg}</span>
                                 </div>
                             </div>
                             <div>
-                                <p className="text-xs text-white/60">Jobs Done</p>
+                                <p className="text-xs text-white/60">{t('teams.jobsDone')}</p>
                                 <AnimatedNumber value={myTeam.jobs_done} className="font-outfit font-bold text-lg" />
                             </div>
                         </div>
@@ -128,7 +100,7 @@ export default function TeamsPage() {
             <FadeIn delay={0.2}>
                 <div className="flex items-center justify-between">
                     <h2 className="font-outfit font-semibold" style={{ fontSize: 16, color: "#111827" }}>
-                        Discover Squads
+                        {t('teams.discoverSquads')}
                     </h2>
                 </div>
             </FadeIn>
@@ -151,8 +123,8 @@ export default function TeamsPage() {
             ) : discoverTeams.length === 0 && !myTeam ? (
                 <EmptyState
                     icon={<Users className="w-8 h-8" />}
-                    title="No teams yet"
-                    subtitle="Teams will appear here when workers create them. Be the first to start a squad!"
+                    title={t('teams.noTeamsYet')}
+                    subtitle={t('teams.beFirstSquad')}
                 />
             ) : (
                 <AnimatedList className="space-y-3">
@@ -191,8 +163,8 @@ export default function TeamsPage() {
                                             color: joinedIds.has(team.id) ? "#6b7280" : "white",
                                         }}
                                     >
-                                        {joinedIds.has(team.id) ? "Leave" : <>
-                                            <UserPlus className="w-4 h-4" /> Join
+                                        {joinedIds.has(team.id) ? t('teams.leave') : <>
+                                            <UserPlus className="w-4 h-4" /> {t('teams.join')}
                                         </>}
                                     </AnimatedButton>
                                 </div>

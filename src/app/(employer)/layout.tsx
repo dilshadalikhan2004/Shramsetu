@@ -19,20 +19,7 @@ export default function EmployerLayout({ children }: { children: React.ReactNode
             router.push("/splash");
             return;
         }
-
-        // Let the layout dynamic choice handle the mode instead of hard redirecting
-        // if they are on a potentially shared route within this group.
-
-        if (isProfileReady && !isProfileReady()) {
-            router.push("/setup/employer");
-            return;
-        }
-
-        if (generalProfile?.kycStatus === 'none') {
-            router.push("/kyc");
-            return;
-        }
-    }, [mounted, isAuthenticated, mode, isProfileReady, generalProfile, router]);
+    }, [mounted, isAuthenticated, router]);
 
     if (!mounted) {
         return (

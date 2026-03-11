@@ -1,0 +1,12 @@
+{
+  "/(employer)/dashboard/page": "app/(employer)/dashboard/page.js",
+  "/(employer)/employer-chat/page": "app/(employer)/employer-chat/page.js",
+  "/(employer)/employer-notifications/page": "app/(employer)/employer-notifications/page.js",
+  "/(employer)/my-jobs/page": "app/(employer)/my-jobs/page.js",
+  "/(employer)/post-job/page": "app/(employer)/post-job/page.js",
+  "/(employer)/subscription/page": "app/(employer)/subscription/page.js",
+  "/(worker)/settings/page": "app/(worker)/settings/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
+  "/splash/page": "app/splash/page.js"
+}

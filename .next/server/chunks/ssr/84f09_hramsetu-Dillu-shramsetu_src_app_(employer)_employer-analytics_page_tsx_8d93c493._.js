@@ -1,0 +1,3 @@
+module.exports=[91476,a=>{"use strict";var b=a.i(74213);function c(){return(0,b.jsxs)("div",{className:"flex flex-col items-center justify-center min-h-[60vh] text-center",children:[(0,b.jsx)("h1",{className:"text-2xl font-bold text-gray-800 mb-2",children:"Analytics"}),(0,b.jsx)("p",{className:"text-gray-600",children:"This feature is currently under development."})]})}a.s(["default",()=>c])}];
+
+//# sourceMappingURL=84f09_hramsetu-Dillu-shramsetu_src_app_%28employer%29_employer-analytics_page_tsx_8d93c493._.js.map
